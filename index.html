@@ -1,0 +1,73 @@
+<html>
+
+<head>
+    <title>メモ帳アプリ</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <input type="text" id="writeMemo" value="" />
+    <input type="button" value="save" onclick="saveMemo()" />
+    <hr>
+
+    <div>
+        保存メモリスト
+        <p id="outputMemo"></p>
+    </div>
+    
+</body>
+
+<script>
+    // localStorage.setItem("memoCount", 0);
+    function saveMemo() {
+        let writeMemo = document.getElementById('writeMemo');
+        let memoCount = parseInt(localStorage.getItem("memoCount"), 10);
+
+        let t = new Date();
+        let tt;
+
+        let year = t.getFullYear();
+        let month = t.getMonth() + 1;
+        let day = t.getDate();
+        let hour = t.getHours();
+        let minute = t.getMinutes();
+        let second = t.getSeconds();
+        tt = year + '/' + month + '/' + day + ' ' + hour + ':' + minute + ':' + second;
+
+        let chunk = { memo: writeMemo.value, date: tt }
+        let chunkData = JSON.stringify(chunk);
+        if (!memoCount)
+            memoCount = 0;
+
+        localStorage.setItem(`writeMemo${memoCount}`, chunkData);
+        console.log(localStorage);
+        localStorage.setItem("memoCount", memoCount + 1);
+        
+        outputMemo.innerHTML += `<div class="box"><p>${writeMemo.value}  [${tt}]</p><input type="button" value="delete" onclick="deleteMemo('writeMemo${memoCount}')" /></div>`;
+        
+
+    }
+    document.addEventListener('DOMContentLoaded', (event) => {
+        let outputMemo = document.getElementById('outputMemo');
+        let memoCount = parseInt(localStorage.getItem("memoCount"), 10);
+        let count = 0;
+        let chunk;
+        while (count < memoCount) {
+            let chunkData = localStorage.getItem(`writeMemo${count}`);
+            if (chunkData != null) {
+                console.log(localStorage);
+                chunk = JSON.parse(chunkData);
+                    outputMemo.innerHTML += `<div class="box"><p>${chunk.memo}  [${chunk.date}]</p><input type="button" value="delete" onclick="deleteMemo('writeMemo${count}')" /></div>`;
+            }
+            count++;
+        }
+        console.log(memoCount);
+    });
+    function deleteMemo(data){
+        localStorage.removeItem(data);
+        window.location.reload();
+
+    }
+</script>
+
+</html>
